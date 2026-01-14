@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON CORE | BMI CALCULATOR</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-primary: #ff3b00; /* Magma Orange */
+            --neon-secondary: #00f2ff; /* Cyan Accent */
+            --dark-bg: #0a0a0a;
+            --panel-bg: rgba(20, 20, 20, 0.85);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Kanit', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Futuristic Background Grid */
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(transparent 95%, rgba(255, 59, 0, 0.1) 50%),
+                linear-gradient(90deg, transparent 95%, rgba(255, 59, 0, 0.1) 50%);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 10;
+            clip-path: polygon(
+                20px 0, 100% 0, 
+                100% calc(100% - 20px), calc(100% - 20px) 100%, 
+                0 100%, 0 20px
+            ); /* Corner cuts styling */
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-primary), transparent);
+        }
+
+        h1, .teko-font {
+            font-family: 'Teko', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-group input {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            color: var(--neon-primary);
+            font-family: 'Teko', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--neon-primary);
+            box-shadow: 0 0 15px rgba(255, 59, 0, 0.3);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .input-label {
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .cyber-btn {
+            background: linear-gradient(45deg, #cc2e00, #ff5e00);
+            color: white;
+            border: none;
+            font-family: 'Teko', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 59, 0, 0.6);
+        }
+
+        .cyber-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Result Animation */
+        .result-container {
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .result-container.active {
+            height: auto;
+            opacity: 1;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .bmi-score {
+            font-size: 4.5rem;
+            line-height: 1;
+            font-family: 'Teko', sans-serif;
+            background: linear-gradient(180deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .status-text {
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Gauge Bar */
+        .gauge-container {
+            background: #222;
+            height: 8px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f2ff, #00ff48, #ffdd00, #ff3b00);
+            width: 0%;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .decoration-line {
+            position: absolute;
+            background: var(--neon-primary);
+            width: 3px;
+            height: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -10px;
+        }
+
+        /* Remove Arrows from inputs */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <div class="container mx-auto px-4 max-w-md relative z-20">
+        <!-- Main Card -->
+        <div class="glass-panel p-8 w-full">
+            
+            <!-- Header -->
+            <div class="text-center mb-8 border-b border-gray-800 pb-4">
+                <div class="flex justify-center items-center gap-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold text-white tracking-widest">IRON <span class="text-orange-500">CORE</span></h1>
+                </div>
+                <p class="text-gray-400 text-xs tracking-wider">BODY METRICS ANALYZER V.2.0</p>
+            </div>
+
+            <!-- Inputs -->
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="input-group">
+                    <label class="input-label">น้ำหนัก (KG)</label>
+                    <input type="number" id="weight" placeholder="00" oninput="validateInput(this)">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">ส่วนสูง (CM)</label>
+                    <input type="number" id="height" placeholder="000" oninput="validateInput(this)">
+                </div>
+            </div>
+
+            <!-- Action -->
+            <button onclick="calculateBMI()" class="cyber-btn w-full py-3 mb-2 shadow-lg">
+                ANALYZE BMI
+            </button>
+            <button onclick="resetForm()" class="text-gray-500 text-sm w-full hover:text-white transition mt-4 uppercase tracking-widest">
+                [ RESET SYSTEM ]
+            </button>
+
+            <!-- Result Display -->
+            <div id="resultContainer" class="result-container text-center">
+                <p class="text-gray-400 text-sm mb-1 uppercase tracking-widest">Calculated Result</p>
+                <div class="bmi-score" id="bmiValue">00.0</div>
+                
+                <div class="mt-2 mb-4">
+                    <span id="bmiStatus" class="status-text text-xl block text-white">WAISTING FOR DATA...</span>
+                    <span id="bmiAdvice" class="text-xs text-gray-400 font-light">กรุณากรอกข้อมูลเพื่อวิเคราะห์</span>
+                </div>
+
+                <!-- Visual Bar -->
+                <div class="gauge-container">
+                    <div id="gaugeFill" class="gauge-fill"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-500 mt-1 teko-font">
+                    <span>UNDER</span>
+                    <span>NORMAL</span>
+                    <span>OVER</span>
+                    <span>DANGER</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Decor -->
+        <div class="text-center mt-6 opacity-40 teko-font tracking-widest text-xs">
+            SYSTEM READY // WAITING FOR USER INPUT
+        </div>
+    </div>
+
+    <script>
+        function validateInput(input) {
+            if (input.value < 0) input.value = 0;
+            if (input.value.length > 3) input.value = input.value.slice(0, 3);
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const resultContainer = document.getElementById('resultContainer');
+            const bmiValueDisplay = document.getElementById('bmiValue');
+            const bmiStatusDisplay = document.getElementById('bmiStatus');
+            const bmiAdviceDisplay = document.getElementById('bmiAdvice');
+            const gaugeFill = document.getElementById('gaugeFill');
+
+            // Validation
+            if (!weight || !height || height <= 0 || weight <= 0) {
+                alert("SYSTEM ERROR: กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง (ตัวเลขเท่านั้น)");
+                return;
+            }
+
+            // Calculation
+            const bmi = weight / ((height / 100) ** 2);
+            const bmiFormatted = bmi.toFixed(1);
+
+            // Display Logic
+            resultContainer.classList.add('active');
+            
+            // Animation for numbers
+            animateValue(bmiValueDisplay, 0, bmi, 1000);
+
+            // Interpret Result
+            let status = "";
+            let color = "";
+            let advice = "";
+            let widthPercentage = "0%";
+
+            if (bmi < 18.5) {
+                status = "ผอมเกินไป (UNDERWEIGHT)";
+                color = "#00f2ff"; // Cyan
+                advice = "ต้องเพิ่มน้ำหนัก! เน้นกินแป้งและโปรตีน + Weight Training";
+                widthPercentage = "20%";
+            } else if (bmi >= 18.5 && bmi <= 22.9) {
+                status = "สมส่วน (SHREDDED)";
+                color = "#00ff48"; // Green
+                advice = "หุ่นดีแล้ว! รักษาระดับไขมันและสร้างกล้ามเนื้อให้คมชัด";
+                widthPercentage = "45%";
+            } else if (bmi >= 23 && bmi <= 24.9) {
+                status = "น้ำหนักเกิน (BULKING?)";
+                color = "#ffdd00"; // Yellow
+                advice = "เริ่มมีพุงแล้ว หรือคุณกำลัง Bulk? ระวังไขมันสะสม";
+                widthPercentage = "70%";
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                status = "อ้วนระดับ 1 (CARDIO NOW)";
+                color = "#ff7b00"; // Orange
+                advice = "อันตราย! ต้องเริ่มคุมอาหารและคาร์ดิโออย่างจริงจัง";
+                widthPercentage = "85%";
+            } else {
+                status = "อ้วนระดับ 2 (DANGER ZONE)";
+                color = "#ff0000"; // Red
+                advice = "วิกฤต! เสี่ยงโรคแทรกซ้อน ไปยิมด่วนที่สุด!";
+                widthPercentage = "100%";
+            }
+
+            // Update UI
+            bmiStatusDisplay.style.color = color;
+            bmiStatusDisplay.textContent = status;
+            bmiAdviceDisplay.textContent = advice;
+            
+            // Gauge Animation
+            setTimeout(() => {
+                gaugeFill.style.width = widthPercentage;
+                gaugeFill.style.background = color;
+                gaugeFill.style.boxShadow = `0 0 15px ${color}`;
+            }, 100);
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = (progress * (end - start) + start).toFixed(1);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function resetForm() {
+            document.getElementById('weight').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('resultContainer').classList.remove('active');
+            document.getElementById('gaugeFill').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
