@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER-AESTHETIC | BMI ANALYZER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;400;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-green: #ccff00;
+            --dark-bg: #050505;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .heading-font { font-family: 'Orbitron', sans-serif; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
+
+        /* High-Tech Character Styling */
+        .character-wrapper {
+            position: absolute;
+            right: 5%;
+            bottom: 5%;
+            width: 450px;
+            height: 600px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
+            top: 0;
+            animation: scan 4s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes scan {
+            0% { top: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+
+        /* SVG Wireframe Animation */
+        .wireframe-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease-out forwards;
+        }
+
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .cyber-card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 10;
+            clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+        }
+
+        .neon-text-cyan { color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .neon-text-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(204, 255, 0, 0.5); }
+
+        .btn-cyber {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .btn-cyber:hover {
+            background: var(--neon-cyan);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .glitch-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 242, 255, 0.05) 3px);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glitch-overlay"></div>
+
+    <!-- High-Tech Anime Wireframe -->
+    <div class="character-wrapper">
+        <div class="scan-line"></div>
+        <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <g fill="none" stroke="#00f2ff" stroke-width="1" filter="url(#glow)" class="wireframe-path">
+                <!-- Head & Neck -->
+                <ellipse cx="100" cy="50" rx="15" ry="20" />
+                <path d="M90 70 L 85 90 M 110 70 L 115 90" />
+                
+                <!-- Shoulders (Cyber Geometry) -->
+                <path d="M85 90 L 40 105 L 50 145 M 115 90 L 160 105 L 150 145" stroke-width="2" />
+                
+                <!-- Torso (V-Taper Grid) -->
+                <path d="M50 145 L 85 280 L 115 280 L 150 145 Z" stroke-dasharray="5,3" />
+                <path d="M50 145 Q 100 160 150 145" />
+                
+                <!-- Muscles Definition -->
+                <path d="M80 180 H 120 M 80 205 H 120 M 80 230 H 120" stroke-opacity="0.5" />
+                <path d="M100 90 V 280" stroke-opacity="0.3" />
+
+                <!-- Arms -->
+                <path d="M40 105 L 25 200 L 35 250" stroke-opacity="0.6" />
+                <path d="M160 105 L 175 200 L 165 250" stroke-opacity="0.6" />
+
+                <!-- Legs -->
+                <path d="M85 280 L 70 390 M 115 280 L 130 390" />
+            </g>
+
+            <!-- Tech Decor -->
+            <circle cx="40" cy="105" r="3" fill="#00f2ff" />
+            <circle cx="160" cy="105" r="3" fill="#00f2ff" />
+            <path d="M10 380 H 190" stroke="#00f2ff" stroke-width="0.5" stroke-dasharray="2,2" />
+        </svg>
+        <div class="absolute top-10 right-0 mono-font text-[10px] text-cyan-400 opacity-50 text-right">
+            STATUS: ACTIVE<br>SCANNING_CORE: 88%<br>LIMITER: OFF
+        </div>
+    </div>
+
+    <div class="max-w-md w-full cyber-card p-8 m-4">
+        <header class="mb-10 relative">
+            <div class="absolute -left-8 top-0 w-1 h-12 bg-cyan-500"></div>
+            <h1 class="heading-font text-3xl font-black neon-text-cyan italic leading-none">NEURAL SCAN</h1>
+            <p class="mono-font text-[10px] text-cyan-500/70 tracking-[0.3em] mt-2">PHYSIQUE ANALYSIS SYSTEM v4.0</p>
+        </header>
+
+        <div class="space-y-8">
+            <div class="group relative">
+                <label class="block text-[10px] mono-font uppercase text-cyan-500 mb-2">Input_Height (CM)</label>
+                <input type="number" id="height" placeholder="000" 
+                       class="w-full bg-transparent border-l-2 border-cyan-900/50 py-2 px-4 text-3xl heading-font focus:outline-none focus:border-cyan-400 text-white transition-all">
+            </div>
+
+            <div class="group relative">
+                <label class="block text-[10px] mono-font uppercase text-cyan-500 mb-2">Input_Weight (KG)</label>
+                <input type="number" id="weight" placeholder="00.0" 
+                       class="w-full bg-transparent border-l-2 border-cyan-900/50 py-2 px-4 text-3xl heading-font focus:outline-none focus:border-cyan-400 text-white transition-all">
+            </div>
+
+            <button onclick="analyze()" class="w-full py-4 btn-cyber heading-font text-sm tracking-widest uppercase">
+                Initialize Scan
+            </button>
+
+            <div id="result" class="hidden space-y-6 pt-6 border-t border-cyan-900/30">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="mono-font text-[10px] text-gray-500 uppercase">BMI_Index</p>
+                        <div id="bmi-val" class="text-5xl font-black heading-font neon-text-green">24.2</div>
+                    </div>
+                    <div class="text-right">
+                        <p class="mono-font text-[10px] text-gray-500 uppercase">Classification</p>
+                        <div id="bmi-status" class="text-lg font-bold text-white uppercase italic">--</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="h-1 w-full bg-cyan-950 rounded-full overflow-hidden">
+                        <div id="progress" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mono-font text-[8px] text-cyan-900 uppercase">
+                        <span>Under</span><span>Normal</span><span>Over</span><span>Obese</span>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-cyan-950/30 border border-cyan-900/50 rounded flex gap-3 items-start">
+                    <span class="text-cyan-400 text-xs">▶</span>
+                    <p id="tip" class="text-xs text-cyan-200/80 leading-relaxed mono-font"></p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-10 flex justify-between items-center opacity-30 mono-font text-[8px]">
+            <span>SYSTEM_STABLE</span>
+            <span class="animate-pulse">● CONNECTION_LIVE</span>
+        </footer>
+    </div>
+
+    <script>
+        function analyze() {
+            const h = document.getElementById('height').value / 100;
+            const w = document.getElementById('weight').value;
+            const res = document.getElementById('result');
+            
+            if (h > 0 && w > 0) {
+                const bmi = (w / (h * h)).toFixed(1);
+                res.classList.remove('hidden');
+                document.getElementById('bmi-val').innerText = bmi;
+
+                let status, tip, color, percent;
+
+                if (bmi < 18.5) {
+                    status = "Ectomorph / Under";
+                    tip = "CRITICAL: Caloric surplus required. Increase protein intake to support muscle synthesis.";
+                    percent = 20;
+                } else if (bmi < 25) {
+                    status = "Aesthetic Peak";
+                    tip = "OPTIMAL: Symmetry and proportion achieved. Focus on micro-muscle definition and conditioning.";
+                    percent = 45;
+                } else if (bmi < 30) {
+                    status = "Power Bulk / Over";
+                    tip = "WARNING: Excess body fat detected. Metabolic rate optimization recommended for definition.";
+                    percent = 70;
+                } else {
+                    status = "Massive / Obese";
+                    tip = "ALERT: Cardiovascular stress detected. Immediate focus on high-intensity cardio and clean diet.";
+                    percent = 90;
+                }
+
+                document.getElementById('bmi-status').innerText = status;
+                document.getElementById('tip').innerText = tip;
+                document.getElementById('progress').style.width = percent + "%";
+                
+                // Audio effect feel (Visual pulse)
+                document.querySelector('.cyber-card').style.boxShadow = '0 0 50px rgba(0, 242, 255, 0.3)';
+                setTimeout(() => {
+                    document.querySelector('.cyber-card').style.boxShadow = '0 0 30px rgba(0, 242, 255, 0.1)';
+                }, 200);
+            }
+        }
+    </script>
+</body>
+</html>
