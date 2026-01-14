@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON CORE | BIO-SCANNER V3.0</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Share+Tech+Mono&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-primary: #ff3b00; /* Magma Orange */
+            --neon-secondary: #00f2ff; /* Cyan Accent */
+            --dark-bg: #050505;
+            --panel-bg: rgba(10, 10, 12, 0.9);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Kanit', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 50;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Futuristic Background Grid */
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(transparent 95%, rgba(255, 59, 0, 0.05) 50%),
+                linear-gradient(90deg, transparent 95%, rgba(255, 59, 0, 0.05) 50%);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 59, 0, 0.2);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.7);
+            position: relative;
+            z-index: 10;
+            clip-path: polygon(
+                30px 0, 100% 0, 
+                100% calc(100% - 30px), calc(100% - 30px) 100%, 
+                0 100%, 0 30px
+            );
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Corner Accents */
+        .corner-accent {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-secondary);
+            transition: all 0.3s ease;
+        }
+        .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+        .bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+        .br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        h1, .teko-font {
+            font-family: 'Teko', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .mono-font {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* Glitch Effect on Title */
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch-text::before {
+            left: 2px; text-shadow: -1px 0 #ff00c1; clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px; text-shadow: -1px 0 #00fff9; clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 30px, 0); }
+            20% { clip: rect(80px, 9999px, 90px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            100% { clip: rect(40px, 9999px, 80px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(60px, 9999px, 70px, 0); }
+            20% { clip: rect(20px, 9999px, 30px, 0); }
+            40% { clip: rect(90px, 9999px, 100px, 0); }
+            100% { clip: rect(10px, 9999px, 40px, 0); }
+        }
+
+        /* Inputs */
+        .input-group input, .input-group select {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+            color: var(--neon-secondary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--neon-secondary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            background: rgba(0, 20, 30, 0.9);
+        }
+
+        .input-label {
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-family: 'Teko', sans-serif;
+        }
+
+        /* Button */
+        .cyber-btn {
+            background: linear-gradient(90deg, transparent, rgba(255, 59, 0, 0.8), transparent);
+            border: 1px solid var(--neon-primary);
+            color: var(--neon-primary);
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .cyber-btn:hover {
+            background: var(--neon-primary);
+            color: black;
+            box-shadow: 0 0 30px var(--neon-primary);
+            text-shadow: none;
+        }
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Scanner Beam */
+        .scanner-beam {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon-secondary);
+            box-shadow: 0 0 20px var(--neon-secondary), 0 0 40px var(--neon-secondary);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .scanning .scanner-beam {
+            opacity: 1;
+            animation: scan 1.5s ease-in-out 2;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Result Area */
+        .result-panel {
+            border: 1px solid #333;
+            background: rgba(0,0,0,0.5);
+            margin-top: 1rem;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.5s ease;
+        }
+        .result-panel.open {
+            max-height: 500px;
+        }
+
+        .bmi-big-score {
+            font-size: 5rem;
+            line-height: 1;
+            font-family: 'Teko', sans-serif;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        /* Data Grid for extra stats */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: #333; /* Border color */
+            margin-top: 1rem;
+            border: 1px solid #333;
+        }
+        .data-cell {
+            background: rgba(10,10,10,0.9);
+            padding: 10px;
+            text-align: center;
+        }
+        .data-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .data-value {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Log Terminal */
+        .terminal-log {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon-primary);
+            height: 60px;
+            overflow: hidden;
+            text-align: left;
+            opacity: 0.7;
+            border-top: 1px dashed #333;
+            padding-top: 5px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <div class="container mx-auto px-4 max-w-md relative z-20" id="cardContainer">
+        <!-- Main Card -->
+        <div class="glass-panel p-8 w-full" id="mainCard">
+            <!-- Decorative Corners -->
+            <div class="corner-accent tl"></div>
+            <div class="corner-accent tr"></div>
+            <div class="corner-accent bl"></div>
+            <div class="corner-accent br"></div>
+
+            <!-- Scanner Beam -->
+            <div class="scanner-beam"></div>
+            
+            <!-- Header -->
+            <div class="text-center mb-6 border-b border-gray-800 pb-4 relative">
+                <div class="flex justify-center items-center gap-2 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white tracking-widest glitch-text" data-text="IRON CORE">IRON <span class="text-orange-600">CORE</span></h1>
+                </div>
+                <div class="flex justify-between items-center px-4">
+                    <p class="text-gray-500 text-[10px] tracking-[0.2em] mono-font">SYS.BIO.SCAN.V3</p>
+                    <div class="h-1 w-10 bg-orange-600 animate-pulse"></div>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="input-group">
+                    <label class="input-label">น้ำหนัก (KG)</label>
+                    <input type="number" id="weight" placeholder="00" oninput="validateInput(this)">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">ส่วนสูง (CM)</label>
+                    <input type="number" id="height" placeholder="000" oninput="validateInput(this)">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">อายุ (AGE)</label>
+                    <input type="number" id="age" placeholder="25" oninput="validateInput(this)">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">เพศ (GEN)</label>
+                    <select id="gender" class="w-full h-[58px] bg-black text-center">
+                        <option value="male">MALE</option>
+                        <option value="female">FEMALE</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action -->
+            <button onclick="startScan()" class="cyber-btn w-full py-4 mb-2 shadow-lg group">
+                <span class="relative z-10">INITIATE SCAN</span>
+            </button>
+            <button onclick="resetSystem()" class="text-gray-600 text-xs w-full hover:text-red-500 transition mt-2 uppercase tracking-widest mono-font text-right">
+                [ FLUSH SYSTEM MEMORY ]
+            </button>
+
+            <!-- Result Display -->
+            <div id="resultPanel" class="result-panel">
+                <div class="p-4 text-center">
+                    <p class="text-orange-500 text-xs mb-1 uppercase tracking-widest mono-font animate-pulse">Analysis Complete</p>
+                    
+                    <!-- Main Score with Decrypt Effect -->
+                    <div class="bmi-big-score text-white" id="bmiDisplay">00.0</div>
+                    
+                    <div class="mb-4">
+                        <span id="bmiStatus" class="text-2xl font-bold tracking-wider text-cyan-400 teko-font">NORMAL</span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden relative mb-4">
+                        <div id="gaugeBar" class="h-full w-0 transition-all duration-1000 ease-out relative">
+                            <div class="absolute right-0 top-0 h-full w-1 bg-white animate-ping"></div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Data Grid -->
+                    <div class="data-grid">
+                        <div class="data-cell">
+                            <div class="data-label">Ideal Weight</div>
+                            <div class="data-value" id="idealWeight">-- KG</div>
+                        </div>
+                        <div class="data-cell">
+                            <div class="data-label">BMR (Energy)</div>
+                            <div class="data-value" id="bmrValue">-- KCAL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Log -->
+            <div class="terminal-log" id="terminalLog">
+                <div>> SYSTEM STANDBY...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 3D Tilt Effect
+        const card = document.getElementById('mainCard');
+        const container = document.getElementById('cardContainer');
+
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset Tilt on mouse leave
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        function validateInput(input) {
+            if (input.value < 0) input.value = 0;
+            if (input.value.length > 3) input.value = input.value.slice(0, 3);
+        }
+
+        function log(message) {
+            const terminal = document.getElementById('terminalLog');
+            const newLine = document.createElement('div');
+            newLine.innerText = `> ${message}`;
+            terminal.appendChild(newLine);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function startScan() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const age = parseFloat(document.getElementById('age').value) || 25;
+            const gender = document.getElementById('gender').value;
+
+            if (!weight || !height) {
+                log("ERROR: MISSING INPUT DATA");
+                alert("ACCESS DENIED: กรุณากรอกข้อมูลน้ำหนักและส่วนสูง");
+                return;
+            }
+
+            // Start Animation Sequence
+            const mainCard = document.getElementById('mainCard');
+            const resultPanel = document.getElementById('resultPanel');
+            
+            // 1. Hide old result
+            resultPanel.classList.remove('open');
+            
+            // 2. Start Scanning
+            mainCard.classList.add('scanning');
+            log("INITIALIZING BIO-SCAN...");
+            
+            let progress = 0;
+            const scanInterval = setInterval(() => {
+                progress += 20;
+                if(progress < 100) {
+                    log(`SCANNING... ${progress}% COMPLETED`);
+                }
+            }, 300);
+
+            // 3. Process after delay
+            setTimeout(() => {
+                clearInterval(scanInterval);
+                mainCard.classList.remove('scanning');
+                log("DATA ACQUIRED. PROCESSING ALGORITHM...");
+                calculateAndShow(weight, height, age, gender);
+            }, 2000);
+        }
+
+        function calculateAndShow(weight, height, age, gender) {
+            const bmi = weight / ((height / 100) ** 2);
+            
+            // Ideal Weight Calculation (Hamwi Formula approx)
+            // Male: 48kg + 2.7kg for every inch over 5ft
+            // Female: 45.5kg + 2.2kg for every inch over 5ft
+            // Simplified metric version:
+            let idealMin, idealMax;
+            idealMin = 18.5 * ((height/100)**2);
+            idealMax = 22.9 * ((height/100)**2);
+            
+            // BMR Calculation (Mifflin-St Jeor Equation)
+            let bmr;
+            if (gender === 'male') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            } else {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            }
+
+            // Reveal Panel
+            const resultPanel = document.getElementById('resultPanel');
+            resultPanel.classList.add('open');
+
+            // Decrypt Animation for BMI
+            decryptText(document.getElementById('bmiDisplay'), bmi.toFixed(1));
+
+            // Set other values
+            document.getElementById('idealWeight').innerText = `${idealMin.toFixed(0)}-${idealMax.toFixed(0)} KG`;
+            document.getElementById('bmrValue').innerText = `${Math.round(bmr)} KCAL`;
+
+            // Status Logic
+            let status = "";
+            let colorClass = "";
+            let colorHex = "";
+            let barWidth = "0%";
+
+            if (bmi < 18.5) {
+                status = "UNDERWEIGHT";
+                colorClass = "text-cyan-400";
+                colorHex = "#22d3ee";
+                barWidth = "20%";
+                log("RESULT: MASS DEFICIT DETECTED");
+            } else if (bmi >= 18.5 && bmi <= 22.9) {
+                status = "OPTIMAL";
+                colorClass = "text-green-400";
+                colorHex = "#4ade80";
+                barWidth = "50%";
+                log("RESULT: SYSTEMS OPTIMAL");
+            } else if (bmi >= 23 && bmi <= 24.9) {
+                status = "OVERWEIGHT";
+                colorClass = "text-yellow-400";
+                colorHex = "#facc15";
+                barWidth = "70%";
+                log("RESULT: MASS SURPLUS DETECTED");
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                status = "OBESE I";
+                colorClass = "text-orange-500";
+                colorHex = "#f97316";
+                barWidth = "85%";
+                log("WARNING: SYSTEM OVERLOAD LEVEL 1");
+            } else {
+                status = "OBESE II";
+                colorClass = "text-red-600";
+                colorHex = "#dc2626";
+                barWidth = "100%";
+                log("CRITICAL: STRUCTURAL INTEGRITY RISK");
+            }
+
+            // Update UI elements
+            const statusEl = document.getElementById('bmiStatus');
+            statusEl.className = `text-4xl font-bold tracking-wider teko-font ${colorClass} glitch-text`;
+            statusEl.innerText = status;
+            statusEl.setAttribute('data-text', status);
+
+            const gauge = document.getElementById('gaugeBar');
+            gauge.style.backgroundColor = colorHex;
+            gauge.style.boxShadow = `0 0 15px ${colorHex}`;
+            gauge.style.width = barWidth;
+        }
+
+        // Tech Decrypt Animation Effect
+        function decryptText(element, finalValue) {
+            let iterations = 0;
+            const characters = '0123456789.ABCDEF';
+            const interval = setInterval(() => {
+                element.innerText = finalValue.split('')
+                    .map((letter, index) => {
+                        if (index < iterations) {
+                            return finalValue[index];
+                        }
+                        return characters[Math.floor(Math.random() * 16)];
+                    })
+                    .join('');
+
+                if (iterations >= finalValue.length) { 
+                    clearInterval(interval);
+                    element.innerText = finalValue; // Ensure final clean set
+                }
+                
+                iterations += 1/3; // Speed of reveal
+            }, 50);
+        }
+
+        function resetSystem() {
+            document.getElementById('weight').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('resultPanel').classList.remove('open');
+            log("SYSTEM MEMORY PURGED.");
+        }
+    </script>
+</body>
+</html>
